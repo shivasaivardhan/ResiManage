@@ -4,6 +4,7 @@ import com.ssv.ResiManage.dao.ManagerRepository;
 import com.ssv.ResiManage.dao.TenantRepository;
 import com.ssv.ResiManage.dto.ManagerRegistrationDto;
 import com.ssv.ResiManage.dto.TenantRegistrationDto;
+import com.ssv.ResiManage.dto.UserLoginDto;
 import com.ssv.ResiManage.entities.Manager;
 import com.ssv.ResiManage.entities.Tenant;
 import com.ssv.ResiManage.exception.UserAlreadyExistsException;
@@ -43,9 +44,7 @@ public class UserService {
                     .age(dto.getAge())
                     .password(dto.getPassword())
                     .build();
-
             managerRepository.save(manager);
-
         } catch (Exception e) {
             throw new RuntimeException("Could not save manager: " + e.getMessage());
         }
@@ -68,15 +67,48 @@ public class UserService {
                     .occupation(dto.getOccupation())
                     .address(dto.getAddress())
                     .build();
-
             tenantRepository.save(tenant);
-
         } catch (Exception e) {
             throw new RuntimeException("Could not save Tenant: " + e.getMessage());
         }
     }
 
-    public void updateUser(String email)
-    {
+    public boolean updateUser(String email) {
+        Manager manager = managerRepository.findByEmail(email);
+        if (manager != null) {
+            manager.setEmailVerified(true);
+            managerRepository.save(manager);
+            return true;
+        }
+        Tenant tenant = tenantRepository.getTenantByEmail(email);
+        if (tenant != null) {
+            tenant.setEmailVerified(true);
+            tenantRepository.save(tenant);
+            return true;
+        }
+        return false;
     }
+
+    public boolean loginUser(UserLoginDto userLoginDto) {
+        if ((managerRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword())) != null)
+            return true;
+        else if ((tenantRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword())) != null)
+            return true;
+        return false;
+    }
+
+    public boolean checkUserOtpStatus(UserLoginDto userLoginDto) {
+        Manager manager = managerRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
+        if (manager != null) {
+            return manager.isEmailVerified();
+        }
+
+        Tenant tenant = tenantRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
+        if (tenant != null) {
+            return tenant.isEmailVerified();
+        }
+
+        return false;
+    }
+
 }

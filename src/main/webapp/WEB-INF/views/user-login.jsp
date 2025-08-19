@@ -61,7 +61,7 @@
 <div class="login-container">
     <h3 class="text-center">User Login</h3>
 
-    <form:form modelAttribute="user" method="post" action="/user/signin">
+    <form:form modelAttribute="user" method="post" action="/user/signin/verify">
                     <p style="color: red;"> ${msg} </p>
 
         <div class="mb-3">

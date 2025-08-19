@@ -11,4 +11,6 @@ public interface TenantRepository extends JpaRepository<Tenant,Long> {
 
     @Query("select m from Tenant m where m.phoneNo= ?1")        //Declared Queries with Positional parameters
     Tenant getTenantByPhoneNo(String email);
+    Tenant findByEmailAndPassword(String email, String password);//Derived Queries
+
 }

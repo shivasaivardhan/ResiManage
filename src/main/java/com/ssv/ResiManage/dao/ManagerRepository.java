@@ -10,5 +10,8 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
     Manager getManagerByEmail(@Param("email") String email);
 
     @Query("select m from Manager m where m.phoneNo= ?1")        //Positional parameters
-    Manager getManagerByPhoneNo(String email);
+    Manager getManagerByPhoneNo(String phone);
+
+    Manager findByEmail(String email);
+    Manager findByEmailAndPassword(String email,String password);//Derived Queries
 }
