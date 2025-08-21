@@ -27,7 +27,7 @@ public class TenantRegistrationDto {
     @NotBlank(message = "Address cannot be blank")
     private String address;
     @NotBlank(message = "Phone Number cannot be blank")
-    @Length(min = 10,max = 12,message = "Phone Number must be a valid one")
+    @Length(min = 10,max = 10,message = "Phone Number must be a valid one")
     private String phoneNo;
     private boolean termsAccepted;
 

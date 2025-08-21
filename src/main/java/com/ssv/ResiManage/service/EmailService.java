@@ -47,7 +47,7 @@ public class EmailService {
         mimeMessageHelper.setFrom("shivasaivardhan1729@gmail.com");
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setSubject("Otp Verification");
-        mimeMessageHelper.setText(htmlContent);
+        mimeMessageHelper.setText(htmlContent,true);
         javaMailSender.send(mimeMessage);
     }
 
