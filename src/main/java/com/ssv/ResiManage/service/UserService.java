@@ -9,6 +9,7 @@ import com.ssv.ResiManage.entities.Manager;
 import com.ssv.ResiManage.entities.Tenant;
 import com.ssv.ResiManage.exception.UserAlreadyExistsException;
 import com.ssv.ResiManage.misc.AppConstants;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -89,25 +90,37 @@ public class UserService {
         return false;
     }
 
-    public boolean loginUser(UserLoginDto userLoginDto) {
-        if ((managerRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword())) != null)
-            return true;
-        else if ((tenantRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword())) != null)
-            return true;
-        return false;
+    public String loginUser(UserLoginDto userLoginDto, HttpSession httpSession) {
+        String role=null;
+        Manager manager=managerRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
+        if (manager != null)
+        {
+            httpSession.setAttribute("loggedInUser",manager);
+            role=manager.getRole();
+            return role;
+        }
+        Tenant tenant=tenantRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
+        if (tenant != null)
+        {
+            httpSession.setAttribute("loggedInUser",tenant);
+            role= tenant.getRole();;
+            return role;
+        }
+        return role;
     }
 
-    public boolean checkUserOtpStatus(UserLoginDto userLoginDto) {
-        Manager manager = managerRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
-        if (manager != null) {
-            return manager.isEmailVerified();
-        }
-
-        Tenant tenant = tenantRepository.findByEmailAndPassword(userLoginDto.getEmail(), userLoginDto.getPassword());
-        if (tenant != null) {
+    public boolean checkUserOtpStatus(String role,HttpSession httpSession) {
+        System.out.println("entered checkUserOtpStatus");
+       if(role.equals(AppConstants.MANAGER_ROLE))
+       {
+           Manager manager= (Manager) httpSession.getAttribute("loggedInUser");
+           return manager.isEmailVerified();
+       }
+        if(role.equals(AppConstants.TENANT_ROLE))
+        {
+            Tenant tenant= (Tenant) httpSession.getAttribute("loggedInUser");
             return tenant.isEmailVerified();
         }
-
         return false;
     }
 

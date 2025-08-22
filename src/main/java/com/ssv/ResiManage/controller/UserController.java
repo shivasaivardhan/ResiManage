@@ -3,8 +3,12 @@ package com.ssv.ResiManage.controller;
 import com.ssv.ResiManage.dto.ManagerRegistrationDto;
 import com.ssv.ResiManage.dto.UserLoginDto;
 import com.ssv.ResiManage.dto.TenantRegistrationDto;
+import com.ssv.ResiManage.entities.Manager;
+import com.ssv.ResiManage.entities.Tenant;
 import com.ssv.ResiManage.exception.UserAlreadyExistsException;
+import com.ssv.ResiManage.misc.AppConstants;
 import com.ssv.ResiManage.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -48,11 +52,22 @@ public class UserController {
 
 
     @PostMapping("/signin/verify")
-    public String login(@ModelAttribute("user") UserLoginDto userLoginDto, Model model) {
-        if (userService.loginUser(userLoginDto)) {
-            if (userService.checkUserOtpStatus(userLoginDto)) {
-                model.addAttribute("user", userLoginDto);
-                return "home";
+    public String login(@ModelAttribute("user") UserLoginDto userLoginDto, Model model, HttpSession httpSession) {
+        String login_role = userService.loginUser(userLoginDto, httpSession);
+        if (login_role != null) {
+            System.out.println("Role Verified" + login_role);
+            if (userService.checkUserOtpStatus(login_role, httpSession)) {
+                System.out.println("OTP Verified");
+                if (login_role.equals(AppConstants.MANAGER_ROLE)) {
+                    Manager manager = (Manager) httpSession.getAttribute("loggedInUser");
+                    model.addAttribute("manager", manager);
+                    return "manager-dashboard";
+                }
+                if (login_role.equals(AppConstants.TENANT_ROLE)) {
+                    Tenant tenant = (Tenant) httpSession.getAttribute("loggedInUser");
+                    model.addAttribute("tenant", tenant);
+                    return "tenant-dashboard";
+                }
             }
             model.addAttribute("msg", "Please complete the email verification process to login.");
             model.addAttribute("user", userLoginDto);
@@ -101,6 +116,11 @@ public class UserController {
         }
     }
 
-
+    @GetMapping("/logout")
+    public String logout(Model model)
+    {
+        model.addAttribute("user", new UserLoginDto());
+        return "user-login";
+    }
 }
 
