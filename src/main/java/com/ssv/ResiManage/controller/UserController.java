@@ -55,9 +55,7 @@ public class UserController {
     public String login(@ModelAttribute("user") UserLoginDto userLoginDto, Model model, HttpSession httpSession) {
         String login_role = userService.loginUser(userLoginDto, httpSession);
         if (login_role != null) {
-            System.out.println("Role Verified" + login_role);
             if (userService.checkUserOtpStatus(login_role, httpSession)) {
-                System.out.println("OTP Verified");
                 if (login_role.equals(AppConstants.MANAGER_ROLE)) {
                     Manager manager = (Manager) httpSession.getAttribute("loggedInUser");
                     model.addAttribute("manager", manager);
@@ -81,7 +79,6 @@ public class UserController {
 
     @GetMapping("/admin-dashboard")
     public String adminValidation(@ModelAttribute("user") UserLoginDto userLoginDto, Model model) {
-        System.out.println(userLoginDto);
         if (userService.adminValidation(userLoginDto.getEmail(), userLoginDto.getPassword())) {
             return "admin-dashboard";
         }

@@ -21,8 +21,6 @@ public class UserService {
     private final ManagerRepository managerRepository;
 
     public boolean adminValidation(String email, String password) {
-        System.out.println(AppConstants.admin_email);
-        System.out.println(AppConstants.admin_password);
         if (email.equals(AppConstants.admin_email) && password.equals(AppConstants.admin_password)) {
             System.out.println(email + ":" + password);
             return true;
@@ -110,7 +108,6 @@ public class UserService {
     }
 
     public boolean checkUserOtpStatus(String role,HttpSession httpSession) {
-        System.out.println("entered checkUserOtpStatus");
        if(role.equals(AppConstants.MANAGER_ROLE))
        {
            Manager manager= (Manager) httpSession.getAttribute("loggedInUser");
