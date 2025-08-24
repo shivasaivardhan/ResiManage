@@ -29,7 +29,7 @@ public class Tenant {
     private String phoneNo;
     //@Builder.Default in Lombok is used to ensure default values are preserved when using the @Builder pattern.
     @Builder.Default
-    private String role= AppConstants.MANAGER_ROLE;
+    private String role= AppConstants.TENANT_ROLE;
     @Builder.Default
     private boolean emailVerified = false;
     @CreationTimestamp

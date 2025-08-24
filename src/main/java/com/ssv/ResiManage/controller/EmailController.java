@@ -25,23 +25,23 @@ public class EmailController {
     }
 
     @GetMapping("/otp/email/{emailid}")
-    public String getOTP(@PathVariable("emailid") String email,Model model) throws IOException, MessagingException {
+    public String getOTP(@PathVariable("emailid") String email, Model model) throws IOException, MessagingException {
         emailService.sendOtpViaMail(email);
-        model.addAttribute("email",email);
+        model.addAttribute("email", email);
         return "enter-otp";
     }
 
     @PostMapping("/otp/verify")
-    public String verifyOTP(@RequestParam("otp") String otp, @RequestParam("email") String email,Model model) {
+    public String verifyOTP(@RequestParam("otp") String otp, @RequestParam("email") String email, Model model) {
 
-        if(emailService.verifyOtp(otp,email))
-        {
-            model.addAttribute("msg","OTP Verification completed");
-            model.addAttribute("user",new UserLoginDto());
+        if (emailService.verifyOtp(otp, email)) {
+            userService.updateUser(email);
+            model.addAttribute("msg", "OTP Verification completed");
+            model.addAttribute("user", new UserLoginDto());
             return "user-login";
         }
-        model.addAttribute("msg","OTP Verification failed.Please try again...");
-        model.addAttribute("user",new UserLoginDto());
+        model.addAttribute("msg", "OTP Verification failed.Please try again...");
+        model.addAttribute("user", new UserLoginDto());
         return "user-login";
     }
 }
