@@ -47,14 +47,14 @@ public class EmailService {
         mimeMessageHelper.setFrom("shivasaivardhan1729@gmail.com");
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setSubject("Otp Verification");
-        mimeMessageHelper.setText(htmlContent);
+        mimeMessageHelper.setText(htmlContent,true);
         javaMailSender.send(mimeMessage);
     }
 
     public boolean verifyOtp(String otp, String email) {
         UserOtp userOtp = otpRepository.findTopByEmailOrderByCreatedAtDesc(email);
-        if(userOtp == null) return false;
-        long diff = Duration.between(userOtp.getCreatedAt(),LocalDateTime.now()).toMinutes();   //does b-a
+        if (userOtp == null) return false;
+        long diff = Duration.between(userOtp.getCreatedAt(), LocalDateTime.now()).toMinutes();   //does b-a
         if (otp.equals(userOtp.getOtp()) && diff < 5)
             return true;
         return false;
